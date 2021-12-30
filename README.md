@@ -1,9 +1,3 @@
-
-
-
-
-
-
 <!-- omit in toc -->
 
 # BigTreeTech TFT Touchscreen
