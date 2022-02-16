@@ -108,7 +108,7 @@ const ITEM itemIsPause[2] = {
 
 const ITEM itemIsPrinting[3] = {
   // icon                        label
-  {ICON_BACKGROUND,              LABEL_BACKGROUND},
+  {ICON_NULL,                    LABEL_NULL},
   {ICON_MAINMENU,                LABEL_MAIN_SCREEN},
   {ICON_BACK,                    LABEL_BACK},
 };
@@ -171,7 +171,7 @@ void menuBeforePrinting(void)
         break;
       }
 
-    case TFT_UDISK:
+    case TFT_USB_DISK:
     case TFT_SD:  // GCode from file on TFT SD
       {
         FIL file;
@@ -516,7 +516,7 @@ void stopConfirm(void)
   CLOSE_MENU();
 }
 
-void printInfoPopup(void)
+void printSummaryPopup(void)
 {
   uint8_t hour = infoPrintSummary.time / 3600;
   uint8_t min = infoPrintSummary.time % 3600 / 60;
@@ -556,15 +556,15 @@ void menuPrinting(void)
   // 1 title, ITEM_PER_PAGE items (icon + label)
   MENUITEMS printingItems = {
     // title
-    LABEL_BACKGROUND,
+    LABEL_NULL,
     // icon                          label
     {
-      {ICON_BACKGROUND,              LABEL_BACKGROUND},
-      {ICON_BACKGROUND,              LABEL_BACKGROUND},
-      {ICON_BACKGROUND,              LABEL_BACKGROUND},
-      {ICON_BACKGROUND,              LABEL_BACKGROUND},
-      {ICON_BACKGROUND,              LABEL_BACKGROUND},
-      {ICON_BACKGROUND,              LABEL_BABYSTEP},
+      {ICON_NULL,                    LABEL_NULL},
+      {ICON_NULL,                    LABEL_NULL},
+      {ICON_NULL,                    LABEL_NULL},
+      {ICON_NULL,                    LABEL_NULL},
+      {ICON_NULL,                    LABEL_NULL},
+      {ICON_NULL,                    LABEL_BABYSTEP},
       {ICON_MORE,                    LABEL_MORE},
       {ICON_STOP,                    LABEL_STOP},
     }
@@ -589,29 +589,26 @@ void menuPrinting(void)
 
   if (lastPrinting == true)
   {
-    if (infoMachineSettings.longFilename == ENABLED && infoFile.source == BOARD_SD)
-      printingItems.title.address = (uint8_t *) infoFile.longFile[infoFile.fileIndex];
-    else
-      printingItems.title.address = getPrintName(infoFile.title);
-
     printingItems.items[KEY_ICON_4] = itemIsPause[lastPause];
     printingItems.items[KEY_ICON_5].icon = (infoFile.source < BOARD_SD && isPrintModelIcon()) ? ICON_PREVIEW : ICON_BABYSTEP;
   }
   else  // returned to this menu after a print was done (ex: after a popup)
   {
-    printingItems.title.address = (uint8_t *)infoPrintSummary.name;
-
     printingItems.items[KEY_ICON_4] = itemIsPrinting[1];  // MainScreen
     printingItems.items[KEY_ICON_5] = itemIsPrinting[0];  // BackGround
     printingItems.items[KEY_ICON_6] = itemIsPrinting[0];  // BackGround
     printingItems.items[KEY_ICON_7] = itemIsPrinting[2];  // Back
   }
 
+  printingItems.title.address = hideFilenameExtension(infoFile.fileIndex);
+
   menuDrawPage(&printingItems);
   printingDrawPage();
 
-  if (lastPrinting == false)
-    drawPrintInfo();
+  #ifndef PORTRAIT_MODE
+    if (lastPrinting == false)
+      drawPrintInfo();
+  #endif
 
   while (MENU_IS(menuPrinting))
   {
@@ -736,6 +733,12 @@ void menuPrinting(void)
     if (lastPrinting != isPrinting())
     {
       lastPrinting = isPrinting();
+
+      #ifdef PORTRAIT_MODE
+        if (lastPrinting == false)
+          printSummaryPopup();
+      #endif
+
       return;  // It will restart this interface if directly return this function without modify the value of infoMenu
     }
 
@@ -745,12 +748,12 @@ void menuPrinting(void)
     switch (key_num)
     {
       case PS_KEY_0:
-        heatSetCurrentIndex(currentTool);
+        heatSetCurrentIndex(-1);  // set last used hotend index
         OPEN_MENU(menuHeat);
         break;
 
       case PS_KEY_1:
-        heatSetCurrentIndex(BED + currentBCIndex);
+        heatSetCurrentIndex(-2);  // set last used bed index
         OPEN_MENU(menuHeat);
         break;
 
@@ -764,7 +767,7 @@ void menuPrinting(void)
         break;
 
       case PS_KEY_4:
-        layerDisplayType ++;  // trigger cleaning previous values
+        layerDisplayType++;  // trigger cleaning previous values
         if (layerDisplayType != CLEAN_LAYER_HEIGHT)
         {
           reDrawPrintingValue(ICON_POS_Z, PRINT_TOP_ROW);
@@ -784,7 +787,7 @@ void menuPrinting(void)
         break;
 
       case PS_KEY_6:
-        if (isPrinting())
+        if (lastPrinting == true)  // if printing
         { // Pause button
           if (getHostDialog() || isRemoteHostPrinting())
             addToast(DIALOG_TYPE_ERROR, (char *)textSelect(LABEL_BUSY));
@@ -810,7 +813,7 @@ void menuPrinting(void)
         break;
 
       case PS_KEY_9:
-        if (isPrinting())
+        if (lastPrinting == true)  // if printing
         {
           if (isRemoteHostPrinting())
           {
@@ -830,7 +833,7 @@ void menuPrinting(void)
         break;
 
       case PS_KEY_INFOBOX:
-        printInfoPopup();
+        printSummaryPopup();
         break;
 
       default:

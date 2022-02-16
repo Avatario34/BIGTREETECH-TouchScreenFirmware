@@ -17,8 +17,8 @@ const MENUITEMS loadUnloadItems = {
   // icon                          label
   {
     {ICON_UNLOAD,                  LABEL_UNLOAD},
-    {ICON_BACKGROUND,              LABEL_BACKGROUND},
-    {ICON_BACKGROUND,              LABEL_BACKGROUND},
+    {ICON_NULL,                    LABEL_NULL},
+    {ICON_NULL,                    LABEL_NULL},
     {ICON_LOAD,                    LABEL_LOAD},
     {ICON_NOZZLE,                  LABEL_NOZZLE},
     {ICON_HEAT,                    LABEL_HEAT},
@@ -106,7 +106,7 @@ void menuLoadUnload(void)
           break;
 
         case KEY_ICON_5:  // heat menu
-          heatSetCurrentIndex(currentTool);  // preselect current nozzle for "Heat" menu
+          heatSetCurrentIndex(tool_index);  // preselect current nozzle for "Heat" menu
           OPEN_MENU(menuHeat);
           eAxisBackup.handled = false;  // exiting from Extrude menu (user might never come back by "Back" long press in Heat menu)
           lastCmd = NONE;
