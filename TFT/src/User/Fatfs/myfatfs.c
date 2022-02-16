@@ -12,7 +12,7 @@ FATFS fatfs[FF_VOLUMES];  // FATFS work area
  * @param name2 name of second file/folder
  * @param date2 date/time for second file/folder
  */
-bool compareFile(char * name1, int32_t date1, char * name2, int32_t date2)
+bool compareFile(char * name1, uint32_t date1, char * name2, uint32_t date2)
 {
   // sort by date
   if (infoSettings.files_sort_by <= SORT_DATE_OLD_FIRST)
@@ -47,15 +47,15 @@ bool compareFile(char * name1, int32_t date1, char * name2, int32_t date2)
 */
 bool mountSDCard(void)
 {
-  return (f_mount(&fatfs[VOLUMES_SD_CARD], "SD:", 1) == FR_OK);
+  return (f_mount(&fatfs[VOLUMES_SD_CARD], SD_ROOT_DIR, 1) == FR_OK);
 }
 
 /*
- mount U disk from Fatfs
+ mount USB disk from Fatfs
 */
-bool mountUDisk(void)
+bool mountUSBDisk(void)
 {
-  return (f_mount(&fatfs[VOLUMES_U_DISK], "U:", 1) == FR_OK);
+  return (f_mount(&fatfs[VOLUMES_USB_DISK], USBDISK_ROOT_DIR, 1) == FR_OK);
 }
 
 /*
@@ -68,8 +68,8 @@ bool scanPrintFilesFatFs(void)
   FILINFO finfo;
   uint16_t len = 0;
   DIR dir;
-  int32_t folderDate[FILE_NUM];
-  int32_t fileDate[FILE_NUM];
+  uint32_t folderDate[FILE_NUM];
+  uint32_t fileDate[FILE_NUM];
 
   clearInfoFile();
 
@@ -96,7 +96,7 @@ bool scanPrintFilesFatFs(void)
         break;
 
       // copy date/time modified
-      folderDate[infoFile.folderCount] = (finfo.fdate * 100000) + finfo.ftime;
+      folderDate[infoFile.folderCount] = ((uint32_t)(finfo.fdate) << 16) | finfo.ftime;
       // copy folder name
       memcpy(infoFile.folder[infoFile.folderCount++], finfo.fname, len);
     }
@@ -113,11 +113,10 @@ bool scanPrintFilesFatFs(void)
         break;
 
       // copy date/time modified
-      fileDate[infoFile.fileCount] = (finfo.fdate * 100000) + finfo.ftime;
-      // copy file name
-      strcpy(infoFile.file[infoFile.fileCount], finfo.fname);
-      infoFile.file[infoFile.fileCount][len] = 0;  // set to 0 the extra byte for filename extension check
-      infoFile.longFile[infoFile.fileCount] = 0;   // long filename is not supported, so always set it to 0
+      fileDate[infoFile.fileCount] = ((uint32_t)(finfo.fdate) << 16) | finfo.ftime;
+      // copy file name and set the flag for filename extension check
+      strncpy(infoFile.file[infoFile.fileCount], finfo.fname, len + 1);  // "+ 1": the flag for filename extension check
+      infoFile.longFile[infoFile.fileCount] = NULL;   // long filename is not supported, so always set it to NULL
       infoFile.fileCount++;
     }
   }

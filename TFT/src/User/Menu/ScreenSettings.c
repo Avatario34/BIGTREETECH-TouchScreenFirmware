@@ -158,8 +158,8 @@ void menuMarlinModeSettings(void)
   // icon                       ItemType          Item Title               item value text(only for custom value)
     {CHARICON_FONT_COLOR,       LIST_CUSTOMVALUE, LABEL_FONT_COLOR,        LABEL_CUSTOM},
     {CHARICON_BACKGROUND_COLOR, LIST_CUSTOMVALUE, LABEL_BG_COLOR,          LABEL_CUSTOM},
-    {CHARICON_TOGGLE_ON,        LIST_TOGGLE,      LABEL_MARLIN_FULLSCREEN, LABEL_BACKGROUND},
-    {CHARICON_TOGGLE_ON,        LIST_TOGGLE,      LABEL_MARLIN_SHOW_TITLE, LABEL_BACKGROUND},
+    {CHARICON_TOGGLE_ON,        LIST_TOGGLE,      LABEL_MARLIN_FULLSCREEN, LABEL_NULL},
+    {CHARICON_TOGGLE_ON,        LIST_TOGGLE,      LABEL_MARLIN_SHOW_TITLE, LABEL_NULL},
     {CHARICON_BLANK,            LIST_CUSTOMVALUE, LABEL_MARLIN_TYPE,       LABEL_DYNAMIC},
   };
 
@@ -291,17 +291,18 @@ void menuUISettings(void)
   // icon                ItemType          Item Title                  item value text(only for custom value)
     {CHARICON_BLANK,     LIST_CUSTOMVALUE, LABEL_ACK_NOTIFICATION,     LABEL_DYNAMIC},
     {CHARICON_BLANK,     LIST_CUSTOMVALUE, LABEL_FILES_SORT_BY,        LABEL_DYNAMIC},
-    {CHARICON_TOGGLE_ON, LIST_TOGGLE,      LABEL_FILES_LIST_MODE,      LABEL_BACKGROUND},
-    {CHARICON_TOGGLE_ON, LIST_TOGGLE,      LABEL_FILENAME_EXTENSION,   LABEL_BACKGROUND},
-    {CHARICON_TOGGLE_ON, LIST_TOGGLE,      LABEL_FAN_SPEED_PERCENTAGE, LABEL_BACKGROUND},
-    {CHARICON_TOGGLE_ON, LIST_TOGGLE,      LABEL_PERSISTENT_INFO,      LABEL_BACKGROUND},
-    {CHARICON_TOGGLE_ON, LIST_TOGGLE,      LABEL_TERMINAL_ACK,         LABEL_BACKGROUND},
+    {CHARICON_TOGGLE_ON, LIST_TOGGLE,      LABEL_FILES_LIST_MODE,      LABEL_NULL},
+    {CHARICON_TOGGLE_ON, LIST_TOGGLE,      LABEL_FILENAME_EXTENSION,   LABEL_NULL},
+    {CHARICON_TOGGLE_ON, LIST_TOGGLE,      LABEL_FAN_SPEED_PERCENTAGE, LABEL_NULL},
+    {CHARICON_TOGGLE_ON, LIST_TOGGLE,      LABEL_PERSISTENT_INFO,      LABEL_NULL},
+    {CHARICON_TOGGLE_ON, LIST_TOGGLE,      LABEL_TERMINAL_ACK,         LABEL_NULL},
+    {CHARICON_TOGGLE_ON, LIST_TOGGLE,      LABEL_LED_ALWAYS_ON,        LABEL_NULL},
 
-    #ifdef LED_COLOR_PIN
+    #ifdef KNOB_LED_COLOR_PIN
       {CHARICON_BLANK,     LIST_CUSTOMVALUE, LABEL_KNOB_LED_COLOR,       LABEL_OFF},
 
       #ifdef LCD_LED_PWM_CHANNEL
-        {CHARICON_TOGGLE_ON, LIST_TOGGLE,      LABEL_KNOB_LED_IDLE,        LABEL_BACKGROUND},
+        {CHARICON_TOGGLE_ON, LIST_TOGGLE,      LABEL_KNOB_LED_IDLE,        LABEL_NULL},
       #endif
     #endif
   };
@@ -316,12 +317,13 @@ void menuUISettings(void)
   uiItems[4].icon = iconToggle[infoSettings.fan_percentage];
   uiItems[5].icon = iconToggle[infoSettings.persistent_info];
   uiItems[6].icon = iconToggle[infoSettings.terminal_ack];
+  uiItems[7].icon = iconToggle[infoSettings.led_always_on];
 
-  #ifdef LED_COLOR_PIN
-    uiItems[7].valueLabel = led_color_names[infoSettings.knob_led_color];
+  #ifdef KNOB_LED_COLOR_PIN
+    uiItems[8].valueLabel = knob_led_color_names[infoSettings.knob_led_color];
 
     #ifdef LCD_LED_PWM_CHANNEL
-      uiItems[8].icon = iconToggle[infoSettings.knob_led_idle];
+      uiItems[9].icon = iconToggle[infoSettings.knob_led_idle];
     #endif
   #endif
 
@@ -367,15 +369,20 @@ void menuUISettings(void)
         uiItems[curIndex].icon = iconToggle[infoSettings.terminal_ack];
         break;
 
-      #ifdef LED_COLOR_PIN
-        case 7:
-          infoSettings.knob_led_color = (infoSettings.knob_led_color + 1 ) % LED_COLOR_COUNT;
-          uiItems[curIndex].valueLabel = led_color_names[infoSettings.knob_led_color];
-          Knob_LED_SetColor(led_colors[infoSettings.knob_led_color], infoSettings.neopixel_pixels);
+      case 7:
+        infoSettings.led_always_on = (infoSettings.led_always_on + 1) % ITEM_TOGGLE_NUM;
+        uiItems[curIndex].icon = iconToggle[infoSettings.led_always_on];
+        break;
+
+      #ifdef KNOB_LED_COLOR_PIN
+        case 8:
+          infoSettings.knob_led_color = (infoSettings.knob_led_color + 1 ) % KNOB_LED_COLOR_COUNT;
+          uiItems[curIndex].valueLabel = knob_led_color_names[infoSettings.knob_led_color];
+          Knob_LED_SetColor(knob_led_colors[infoSettings.knob_led_color], infoSettings.neopixel_pixels);
           break;
 
         #ifdef LCD_LED_PWM_CHANNEL
-          case 8:
+          case 9:
             infoSettings.knob_led_idle = (infoSettings.knob_led_idle + 1) % ITEM_TOGGLE_NUM;
             uiItems[curIndex].icon = iconToggle[infoSettings.knob_led_idle];
             break;
@@ -405,10 +412,10 @@ void menuSoundSettings(void)
   LABEL title = {LABEL_SOUND};
   LISTITEM sounditems[] = {
   // icon                ItemType     Item Title          item value text(only for custom value)
-    {CHARICON_TOGGLE_ON, LIST_TOGGLE, LABEL_TOUCH_SOUND,  LABEL_BACKGROUND},
-    {CHARICON_TOGGLE_ON, LIST_TOGGLE, LABEL_TOAST_SOUND,  LABEL_BACKGROUND},
-    {CHARICON_TOGGLE_ON, LIST_TOGGLE, LABEL_ALERT_SOUND,  LABEL_BACKGROUND},
-    {CHARICON_TOGGLE_ON, LIST_TOGGLE, LABEL_HEATER_SOUND, LABEL_BACKGROUND},
+    {CHARICON_TOGGLE_ON, LIST_TOGGLE, LABEL_TOUCH_SOUND,  LABEL_NULL},
+    {CHARICON_TOGGLE_ON, LIST_TOGGLE, LABEL_TOAST_SOUND,  LABEL_NULL},
+    {CHARICON_TOGGLE_ON, LIST_TOGGLE, LABEL_ALERT_SOUND,  LABEL_NULL},
+    {CHARICON_TOGGLE_ON, LIST_TOGGLE, LABEL_HEATER_SOUND, LABEL_NULL},
   };
 
   uint16_t curIndex = KEY_IDLE;
@@ -453,7 +460,7 @@ void menuBrightnessSettings(void)
     {CHARICON_BLANK,     LIST_CUSTOMVALUE, LABEL_LCD_BRIGHTNESS,      LABEL_DYNAMIC},
     {CHARICON_BLANK,     LIST_CUSTOMVALUE, LABEL_LCD_IDLE_BRIGHTNESS, LABEL_DYNAMIC},
     {CHARICON_BLANK,     LIST_CUSTOMVALUE, LABEL_LCD_IDLE_TIME,       LABEL_DYNAMIC},
-    {CHARICON_TOGGLE_ON, LIST_TOGGLE,      LABEL_LCD_LOCK_ON_IDLE,    LABEL_BACKGROUND},
+    {CHARICON_TOGGLE_ON, LIST_TOGGLE,      LABEL_LCD_LOCK_ON_IDLE,    LABEL_NULL},
   };
 
   uint16_t curIndex = KEY_IDLE;
@@ -532,9 +539,9 @@ void menuScreenSettings(void)
       {ICON_TOUCHSCREEN_ADJUST,      LABEL_TOUCHSCREEN_ADJUST},
       {ICON_LANGUAGE,                LABEL_LANGUAGE},
       {ICON_FEATURE_SETTINGS,        LABEL_UI_SETTINGS},
-      {ICON_BACKGROUND,              LABEL_BACKGROUND},
-      {ICON_BACKGROUND,              LABEL_BACKGROUND},
-      {ICON_BACKGROUND,              LABEL_BACKGROUND},
+      {ICON_NULL,                    LABEL_NULL},
+      {ICON_NULL,                    LABEL_NULL},
+      {ICON_NULL,                    LABEL_NULL},
       {ICON_BACK,                    LABEL_BACK},
     }
   };

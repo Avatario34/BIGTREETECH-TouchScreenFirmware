@@ -22,10 +22,10 @@ void menuExtrude(void)
     // icon                          label
     {
       {ICON_UNLOAD,                  LABEL_UNLOAD},
-      {ICON_BACKGROUND,              LABEL_BACKGROUND},
-      {ICON_BACKGROUND,              LABEL_BACKGROUND},
+      {ICON_NULL,                    LABEL_NULL},
+      {ICON_NULL,                    LABEL_NULL},
       {ICON_LOAD,                    LABEL_LOAD},
-      {ICON_BACKGROUND,              LABEL_BACKGROUND},
+      {ICON_NULL,                    LABEL_NULL},
       {ICON_E_5_MM,                  LABEL_5_MM},
       {ICON_NORMAL_SPEED,            LABEL_NORMAL},
       {ICON_BACK,                    LABEL_BACK},
@@ -94,7 +94,7 @@ void menuExtrude(void)
         }
         else
         {
-          heatSetCurrentIndex(currentTool);  // preselect current nozzle for "Heat" menu
+          heatSetCurrentIndex(curExtruder_index);  // preselect current nozzle for "Heat" menu
           OPEN_MENU(menuHeat);
           eAxisBackup.handled = false;  // exiting from Extrude menu (user might never come back by "Back" long press in Heat menu)
         }

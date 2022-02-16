@@ -3,6 +3,8 @@
 #include "ListItem.h"
 #include "Notification.h"
 
+#define STATUS_BAR_REFRESH_TIME 2000  // refresh time in ms
+
 const GUI_RECT exhibitRect = {
 #ifdef PORTRAIT_MODE
   // exhibitRect is 2 ICON Space in the Lowest Row and 2 Center column.
@@ -318,18 +320,19 @@ const GUI_RECT rect_of_keyPS_end[] = {
   {START_X+PICON_LG_WIDTH*0+PICON_SPACE_X*0,                  1*ICON_HEIGHT+1*SPACE_Y+ICON_START_Y+PICON_HEIGHT*1+PICON_SPACE_Y*1,
    START_X+PICON_LG_WIDTH*0+PICON_SPACE_X*0+PICON_SM_WIDTH*1, 1*ICON_HEIGHT+1*SPACE_Y+ICON_START_Y+PICON_HEIGHT*2+PICON_SPACE_Y*1},
 
-  // 3 bottom icons area
+  // 1st bottom icon
   {0*ICON_WIDTH+0*SPACE_X+START_X,  2*ICON_HEIGHT+2*SPACE_Y+ICON_START_Y,  1*ICON_WIDTH+0*SPACE_X+START_X,  3*ICON_HEIGHT+2*SPACE_Y+ICON_START_Y},
-  {0, 0, 0, 0},
-  {0, 0, 0, 0},
   // 1 side icon next to layer and speed area
-  {2*ICON_WIDTH+2*SPACE_X+START_X,  1*ICON_HEIGHT+1*SPACE_Y+ICON_START_Y,  3*ICON_WIDTH+2*SPACE_X+START_X,  2*ICON_HEIGHT+1*SPACE_Y+ICON_START_Y},
+  {0, 0, 0, 0},
+  // 2nd and 3rd icon bottom area
+  {0, 0, 0, 0},
+  {2*ICON_WIDTH+2*SPACE_X+START_X,  2*ICON_HEIGHT+2*SPACE_Y+ICON_START_Y,  3*ICON_WIDTH+2*SPACE_X+START_X,  3*ICON_HEIGHT+2*SPACE_Y+ICON_START_Y},
 
   // title bar area
   {0, 0, LCD_WIDTH, ICON_START_Y},
 
   // infobox
-  {1*SPACE_X_PER_ICON,  3*ICON_HEIGHT+2*SPACE_Y+ICON_START_Y,  3*ICON_WIDTH+2*SPACE_X+START_X,  3*ICON_HEIGHT+2*SPACE_Y+ICON_START_Y}
+  {0, 0, 0, 0}
 #else  // Landscape Mode
   // hotend area DEFAULT LANDSCAPE GUI
   {START_X+PICON_LG_WIDTH*0+PICON_SPACE_X*0,                  PICON_START_Y+PICON_HEIGHT*0+PICON_SPACE_Y*0,
@@ -552,7 +555,7 @@ static const GUI_RECT *curRect = NULL;  // current menu layout grid
 static uint16_t curRectCount = 0;       // current menu layout rect count
 
 static REMINDER reminder = {{0, 0, LCD_WIDTH, TITLE_END_Y}, 0, STATUS_DISCONNECTED, LABEL_UNCONNECTED};
-static REMINDER volumeReminder = {{0, 0, LCD_WIDTH, TITLE_END_Y}, 0, STATUS_IDLE, LABEL_BACKGROUND};
+static REMINDER volumeReminder = {{0, 0, LCD_WIDTH, TITLE_END_Y}, 0, STATUS_IDLE, LABEL_NULL};
 static REMINDER busySign = {{LCD_WIDTH - 5, 0, LCD_WIDTH, 5}, 0, STATUS_BUSY, LABEL_BUSY};
 
 MENUITEMS *getCurMenuItems(void)
@@ -574,7 +577,7 @@ GUI_POINT getIconStartPoint(int index)
 
 uint8_t *labelGetAddress(const LABEL *label)
 {
-  if (label->index == LABEL_BACKGROUND)  // No content in label
+  if (label->index == LABEL_NULL)  // No content in label
     return NULL;
   if (label->index < LABEL_NUM)  // Index of language
     return textSelect(label->index);
@@ -591,7 +594,7 @@ void menuDrawItem(const ITEM *item, uint8_t position)
 void menuDrawIconOnly(const ITEM *item, uint8_t position)
 {
   const GUI_RECT *rect = curRect + position;
-  if (item->icon != ICON_BACKGROUND)
+  if (item->icon != ICON_NULL)
     ICON_ReadDisplay(rect->x0, rect->y0, item->icon);
   else
     GUI_ClearPrect(rect);
@@ -609,7 +612,7 @@ void menuDrawIconText(const ITEM *item, uint8_t position)
 void menuDrawListItem(const LISTITEM *item, uint8_t position)
 {
   const GUI_RECT *rect = rect_of_keyListView + position;
-  if (item->icon == CHARICON_BACKGROUND)
+  if (item->icon == CHARICON_NULL)
   {
     GUI_ClearPrect(rect);
   }
@@ -660,7 +663,7 @@ void reminderMessage(int16_t inf, SYS_STATUS status)
 
   reminder.inf = inf;
   reminder.status = status;
-  reminder.time = OS_GetTimeMs() + 2000;  // 2 seconds
+  reminder.time = OS_GetTimeMs() + STATUS_BAR_REFRESH_TIME;
 
   if (menuType != MENU_TYPE_FULLSCREEN)
   {
@@ -679,7 +682,7 @@ void volumeReminderMessage(int16_t inf, SYS_STATUS status)
 
   volumeReminder.inf = inf;
   volumeReminder.status = status;
-  volumeReminder.time = OS_GetTimeMs() + 2000;
+  volumeReminder.time = OS_GetTimeMs() + STATUS_BAR_REFRESH_TIME;
 
   if (menuType != MENU_TYPE_FULLSCREEN)
   {
@@ -699,7 +702,7 @@ void busyIndicator(SYS_STATUS status)
     GUI_SetColor(infoSettings.font_color);
   }
   busySign.status = status;
-  busySign.time = OS_GetTimeMs() + 2000;
+  busySign.time = OS_GetTimeMs() + STATUS_BAR_REFRESH_TIME;
 }
 
 void loopReminderClear(void)
@@ -826,8 +829,7 @@ void menuReDrawCurTitle(void)
   {
     if (curListItems == NULL)
       return;
-    if (curListItems->title.index < LABEL_BACKGROUND)
-      menuDrawTitle(labelGetAddress(&curListItems->title));
+    menuDrawTitle(labelGetAddress(&curListItems->title));
   }
   else if (menuType == MENU_TYPE_ICON)
   {
@@ -879,11 +881,11 @@ void menuDrawPage(const MENUITEMS *menuItems)
   #endif
 
   menuClearGaps();  // Use this function instead of GUI_Clear to eliminate the splash screen when clearing the screen.
-  menuDrawTitle(labelGetAddress(&menuItems->title));
+  menuDrawTitle(labelGetAddress(&curMenuItems->title));
 
   for (i = 0; i < ITEM_PER_PAGE; i++)
   {
-    menuDrawItem(&menuItems->items[i], i);
+    menuDrawItem(&curMenuItems->items[i], i);
     RAPID_PRINTING_COMM()  // perform backend printing loop between drawing icons to avoid printer idling
   }
 
@@ -912,7 +914,7 @@ void menuDrawListPage(const LISTITEMS *listItems)
   for (i = 0; i < ITEM_PER_PAGE; i++)
   {
     //const GUI_RECT *rect = rect_of_keyListView + i;
-    if (curListItems->items[i].icon != CHARICON_BACKGROUND)
+    if (curListItems->items[i].icon != CHARICON_NULL)
       menuDrawListItem(&curListItems->items[i], i);
     RAPID_PRINTING_COMM()  // perform backend printing loop between drawing icons to avoid printer idling
   }
@@ -1018,7 +1020,7 @@ void itemDrawIconPress(uint8_t position, uint8_t is_press)
   if (menuType == MENU_TYPE_ICON)
   {
     if (curMenuItems == NULL) return;
-    if (curMenuItems->items[position].icon == ICON_BACKGROUND) return;
+    if (curMenuItems->items[position].icon == ICON_NULL) return;
 
     const GUI_RECT *rect = curRect + position;
 
@@ -1034,7 +1036,7 @@ void itemDrawIconPress(uint8_t position, uint8_t is_press)
 
     const GUI_RECT *rect = rect_of_keyListView + position;
 
-    if (curListItems->items[position].icon == CHARICON_BACKGROUND)
+    if (curListItems->items[position].icon == CHARICON_NULL)
     {
       GUI_ClearPrect(rect);
       return;
@@ -1075,9 +1077,9 @@ KEY_VALUES menuKeyGetValue(void)
           {
             tempkey = (KEY_VALUES)KEY_GetValue(COUNT(rect_of_keySS), rect_of_keySS);
           }
-          else if(MENU_IS(menuPrinting))
+          else if (MENU_IS(menuPrinting))
           {
-            if(isPrinting() || infoHost.printing == true)
+            if (isPrinting() || infoHost.printing == true)
               tempkey = (KEY_VALUES)KEY_GetValue(COUNT(rect_of_keyPS), rect_of_keyPS);
             else
               tempkey = (KEY_VALUES)KEY_GetValue(COUNT(rect_of_keyPS_end), rect_of_keyPS_end);
@@ -1265,8 +1267,8 @@ void loopBackEnd(void)
     loopPrintFromOnboardSD();  // handle a print from (remote) onboard SD, if any
   }
 
-  #ifdef U_DISK_SUPPORT
-    USBH_Process(&USB_OTG_Core, &USB_Host);
+  #ifdef USB_FLASH_DRIVE_SUPPORT
+    USB_LoopProcess();
   #endif
 
   #ifdef FIL_RUNOUT_PIN
@@ -1314,7 +1316,7 @@ void loopBackEnd(void)
 // UI-related background loop tasks
 void loopFrontEnd(void)
 {
-  // Check if volume source(SD/U disk) insert
+  // Check if volume source (SD/USB) insert
   loopVolumeSource();
   // Loop to check and run toast messages
   loopToast();
