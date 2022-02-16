@@ -25,7 +25,7 @@ void menuUnifiedMove(void)
       #else
         {ICON_DELTA_CALIBRATE,         LABEL_CALIBRATION},
       #endif
-      {ICON_BACKGROUND,              LABEL_BACKGROUND},
+      {ICON_NULL,                    LABEL_NULL},
       {ICON_BACK,                    LABEL_BACK},
     }
   };
@@ -80,7 +80,11 @@ void menuUnifiedMove(void)
 
       case KEY_ICON_6:
         if (infoMachineSettings.leveling != BL_DISABLED)
+        {
+          if(infoMachineSettings.firmwareType == FW_MARLIN)
+            storeCmd("M420\n");  // refresh ABL_STATE
           OPEN_MENU(menuBedLeveling);
+        }
         break;
 
       case KEY_ICON_7:

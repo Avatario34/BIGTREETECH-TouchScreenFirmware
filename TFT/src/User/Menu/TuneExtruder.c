@@ -55,13 +55,18 @@ static inline void extrudeFilament(void)
     storeCmd("%s\n", tool_change[tool_index]);
 
   // Raise Z axis to pause height
-  mustStoreCmd("G0 Z%.3f F%d\n", coordinateGetAxisActual(Z_AXIS) + infoSettings.pause_z_raise,
-               infoSettings.pause_feedrate[FEEDRATE_Z]);
+  #if DELTA_PROBE_TYPE != 0
+    mustStoreCmd("G0 Z%.3f F%d\n", coordinateGetAxisActual(Z_AXIS) - infoSettings.pause_z_raise,
+                 infoSettings.pause_feedrate[FEEDRATE_Z]);
+  #else
+    mustStoreCmd("G0 Z%.3f F%d\n", coordinateGetAxisActual(Z_AXIS) + infoSettings.pause_z_raise,
+                 infoSettings.pause_feedrate[FEEDRATE_Z]);
+  #endif        
   // Move to pause location
   mustStoreCmd("G0 X%.3f Y%.3f F%d\n", infoSettings.pause_pos[X_AXIS], infoSettings.pause_pos[Y_AXIS],
                infoSettings.pause_feedrate[FEEDRATE_XY]);
   // extrude 100MM
-  mustStoreScript("M83\nG1 F50 E%.2f\nM82\n", EXTRUDE_LEN);
+  mustStoreScript("M83\nG1 F100 E%.2f\nM82\n", EXTRUDE_LEN);
 
   OPEN_MENU(menuNewExtruderESteps);
 }
@@ -75,8 +80,8 @@ void menuTuneExtruder(void)
     // icon                          label
     {
       {ICON_DEC,                     LABEL_DEC},
-      {ICON_BACKGROUND,              LABEL_BACKGROUND},
-      {ICON_BACKGROUND,              LABEL_BACKGROUND},
+      {ICON_NULL,                    LABEL_NULL},
+      {ICON_NULL,                    LABEL_NULL},
       {ICON_INC,                     LABEL_INC},
       {ICON_NOZZLE,                  LABEL_NOZZLE},
       {ICON_5_DEGREE,                LABEL_5_DEGREE},
@@ -212,8 +217,8 @@ void menuNewExtruderESteps(void)
     // icon                          label
     {
       {ICON_DEC,                     LABEL_DEC},
-      {ICON_BACKGROUND,              LABEL_BACKGROUND},
-      {ICON_BACKGROUND,              LABEL_BACKGROUND},
+      {ICON_NULL,                    LABEL_NULL},
+      {ICON_NULL,                    LABEL_NULL},
       {ICON_INC,                     LABEL_INC},
       {ICON_EEPROM_SAVE,             LABEL_SAVE},
       {ICON_1_MM,                    LABEL_1_MM},
