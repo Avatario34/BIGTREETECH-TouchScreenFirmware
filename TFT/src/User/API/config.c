@@ -122,6 +122,7 @@ bool getLangFromFile(char * rootDir)
 
   if (foundkeys != LABEL_NUM)
   {
+    showError(CSTAT_FILE_INVALID);
     success = false;
   }
   else
@@ -141,7 +142,7 @@ bool getLangFromFile(char * rootDir)
   return success;
 }
 
-bool readConfigFile(const char * path, void (*lineParser)(), uint16_t maxLineLen)
+bool readConfigFile(const char * path, void (* lineParser)(), uint16_t maxLineLen)
 {
   bool comment_mode = false;
   bool comment_space = true;
