@@ -10,7 +10,6 @@ typedef enum
   UNLOAD_STARTED,
 } CMD_TYPE;
 
-// 1 title, ITEM_PER_PAGE items (icon + label)
 const MENUITEMS loadUnloadItems = {
   // title
   LABEL_LOAD_UNLOAD,
@@ -44,7 +43,7 @@ void menuLoadUnload(void)
   {
     loopProcessToCondition(&isNotEmptyCmdQueue);  // wait for the communication to be clean
 
-    eAxisBackup.coordinate = ((infoFile.source >= BOARD_SD) ? coordinateGetAxisActual(E_AXIS) : coordinateGetAxisTarget(E_AXIS));
+    eAxisBackup.coordinate = coordinateGetAxis(E_AXIS);
     eAxisBackup.handled = true;
   }
 
@@ -118,7 +117,7 @@ void menuLoadUnload(void)
           break;
 
         case KEY_ICON_7:  // back
-          cooldownTemperature();
+          COOLDOWN_TEMPERATURE();
           lastCmd = NONE;
           CLOSE_MENU();
           eAxisBackup.handled = false;  // the user exited from menu (not any other process/popup/etc)
