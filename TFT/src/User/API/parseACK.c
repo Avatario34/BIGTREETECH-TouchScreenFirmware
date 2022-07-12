@@ -562,11 +562,9 @@ void parseACK(void)
       else if ((ack_seen("@") && ack_seen("T:")) || ack_seen("T0:"))
       {
         heatSetCurrentTemp(NOZZLE0, ack_value() + 0.5f);
+        heatSetTargetTemp(NOZZLE0, ack_second_value() + 0.5f, FROM_HOST);
 
-        if (!heatGetSendWaiting(NOZZLE0))
-          heatSyncTargetTemp(NOZZLE0, ack_second_value() + 0.5f);
-
-        for (uint8_t i = 0; i < MAX_HEATER_COUNT; i++)
+        for (uint8_t i = 1; i < MAX_HEATER_COUNT; i++)
         {
           if (!heaterDisplayIsValid(i))
             continue;
@@ -574,9 +572,7 @@ void parseACK(void)
           if (ack_seen(heaterID[i]))
           {
             heatSetCurrentTemp(i, ack_value() + 0.5f);
-
-            if (!heatGetSendWaiting(i))
-              heatSyncTargetTemp(i, ack_second_value() + 0.5f);
+            heatSetTargetTemp(i, ack_second_value() + 0.5f, FROM_HOST);
           }
         }
 
@@ -780,23 +776,31 @@ void parseACK(void)
       // parse M303, PID autotune finished message
       else if (ack_seen("PID Autotune finished"))
       {
-        pidUpdateStatus(true);
+        pidUpdateStatus(PID_SUCCESS);
       }
       // parse M303, PID autotune failed message
       else if (ack_seen("PID Autotune failed"))
       {
-        pidUpdateStatus(false);
+        pidUpdateStatus(PID_FAILED);
       }
       // parse M303, PID autotune finished message in case of Smoothieware
       else if ((infoMachineSettings.firmwareType == FW_SMOOTHIEWARE) && ack_seen("PID Autotune Complete!"))
       {
         //ack_index += 84; -> need length check
-        pidUpdateStatus(true);
+        pidUpdateStatus(PID_SUCCESS);
       }
       // parse M303, PID autotune failed message in case of Smoothieware
       else if ((infoMachineSettings.firmwareType == FW_SMOOTHIEWARE) && ack_seen("// WARNING: Autopid did not resolve within"))
       {
-        pidUpdateStatus(false);
+        pidUpdateStatus(PID_FAILED);
+      }
+      // parse M306 tuning end message (interrupted or finished)
+      else if (ack_seen("MPC Autotune"))
+      {
+        if (ack_continue_seen("finished"))
+          setMpcTuningResult(FINISHED);
+        else if (ack_continue_seen("interrupted"))
+          setMpcTuningResult(INTERRUPTED);
       }
       // parse and store M355, case light message
       else if (ack_seen("Case light:"))
@@ -867,6 +871,22 @@ void parseACK(void)
         if (ack_seen("Y: ")) y = ack_value();
         if (ack_seen("Z: ")) levelingSetProbedPoint(x, y, ack_value());  // save probed Z value
       }
+      // parse and store Delta Calibration settings
+      #if DELTA_PROBE_TYPE != 0
+      else if (ack_seen("Calibration OK"))
+      {
+        BUZZER_PLAY(SOUND_SUCCESS);
+        if (infoMachineSettings.EEPROM == 1)
+          {
+            setDialogText(LABEL_DELTA_CONFIGURATION, LABEL_EEPROM_SAVE_INFO, LABEL_CONFIRM, LABEL_CANCEL);
+            showDialog(DIALOG_TYPE_SUCCESS, saveEepromSettings, NULL, NULL);
+          }
+        else
+          {
+            popupReminder(DIALOG_TYPE_SUCCESS, LABEL_DELTA_CONFIGURATION, LABEL_PROCESS_COMPLETED);
+          } 
+      } 
+      #endif
 
       //----------------------------------------
       // Parameter / M503 / M115 parsed responses
@@ -930,6 +950,28 @@ void parseACK(void)
         if (ack_seen("Y")) setParameter(param, AXIS_INDEX_Y, ack_value());
         if (ack_seen("Z")) setParameter(param, AXIS_INDEX_Z, ack_value());
       }
+      // parse and store hotend PID (M301)
+      else if (ack_seen("M301"))
+      {
+        uint8_t param = P_HOTEND_PID;
+
+        if (ack_seen("M301")) param = P_HOTEND_PID;  // P_HOTEND_PID
+
+        if (ack_seen("P")) setParameter(param, 0, ack_value());
+        if (ack_seen("I")) setParameter(param, 1, ack_value());
+        if (ack_seen("D")) setParameter(param, 2, ack_value());
+      }
+      // parse and store bed PID (M304)
+      else if (ack_seen("M304"))
+      {
+        uint8_t param = P_BED_PID;
+
+        if (ack_seen("M304")) param = P_BED_PID;  // P_BED_PID
+
+        if (ack_seen("P")) setParameter(param, 0, ack_value());
+        if (ack_seen("I")) setParameter(param, 1, ack_value());
+        if (ack_seen("D")) setParameter(param, 2, ack_value());
+      }
       // parse and store FW retraction (M207) and FW recover (M208)
       else if (ack_seen("M207 S") || ack_seen("M208 S"))
       {
@@ -954,6 +996,19 @@ void parseACK(void)
       else if (ack_seen("M209 S"))
       {
         setParameter(P_AUTO_RETRACT, 0, ack_value());
+      }
+      else if (ack_seen("M306"))
+      {
+        if (ack_continue_seen("E"))
+        {
+          uint8_t index = ack_value();
+
+          if (ack_continue_seen("P"))
+            setMpcHeaterPower(index, ack_value());
+          
+          if (ack_continue_seen("H"))
+            setMpcFilHeatCapacity(index, ack_value());
+        }
       }
       // parse and store Delta configuration / Delta tower angle (M665) and Delta endstop adjustments (M666)
       //
@@ -1104,7 +1159,7 @@ void parseACK(void)
         infoMachineSettings.autoReportTemp = ack_value();
 
         if (infoMachineSettings.autoReportTemp)
-          storeCmd("M155 ");
+          storeCmd("M155 S%u\n", heatGetUpdateSeconds());
       }
       else if (ack_seen("Cap:AUTOREPORT_POS:"))
       {
