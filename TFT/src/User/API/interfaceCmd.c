@@ -442,11 +442,11 @@ void setWaitHeating(uint8_t index)
   if (cmd_seen('R'))
   {
     cmd_ptr[cmd_index - 1] = 'S';
-    heatSetIsWaiting(index, WAIT_COOLING_HEATING);
+    heatSetIsWaiting(index, true);
   }
-  else
+  else if (cmd_seen('S'))
   {
-    heatSetIsWaiting(index, WAIT_HEATING);
+    heatSetIsWaiting(index, (cmd_value() > heatGetCurrentTemp(index) - TEMPERATURE_RANGE));
   }
 }
 
@@ -459,10 +459,9 @@ void syncTargetTemp(uint8_t index)
     temp = cmd_value();
 
     if (temp != heatGetTargetTemp(index))
-      heatSetTargetTemp(index, temp, FROM_CMD);  
+      heatSetTargetTemp(index, temp, FROM_CMD);
   }
 }
-
 
 // Parse and send gcode cmd in infoCmd queue.
 void sendQueueCmd(void)
@@ -656,7 +655,7 @@ void sendQueueCmd(void)
                   Serial_Puts(cmd_port, ".\n");
                 }
 
-                sprintf(buf, "%s printing byte %d/%d\n", (infoFile.source == FS_TFT_SD) ? "TFT SD" : "TFT USB", getPrintCur(), getPrintSize());
+                sprintf(buf, "%s printing byte %d/%d\n", (infoFile.source == FS_TFT_SD) ? "TFT SD" : "TFT USB", getPrintDataCur(), getPrintDataSize());
                 Serial_Puts(cmd_port, buf);
                 Serial_Puts(cmd_port, "ok\n");
 
@@ -791,14 +790,18 @@ void sendQueueCmd(void)
 
         case 73:
           if (cmd_seen('P'))
+          {
+            setPrintProgressSource(PROG_SLICER);
             setPrintProgressPercentage(cmd_value());
+          }
 
           if (cmd_seen('R'))
           {
             setPrintRemainingTime((cmd_value() * 60));
             setTimeFromSlicer(true);  // disable parsing remaning time from gcode comments
-            if (getPrintProgSource() == PROG_FILE && infoSettings.prog_source == 1)
-              setPrintProgSource(PROG_TIME);
+
+            if (getPrintProgressSource() < PROG_TIME && infoSettings.prog_source == 1)
+              setPrintProgressSource(PROG_TIME);
           }
 
           if (!infoMachineSettings.buildPercent)  // if M73 is not supported by Marlin, skip it
@@ -915,7 +918,7 @@ void sendQueueCmd(void)
           else if (cmd_seen_from(cmd_base_index, "Data Left"))  // parsing printing data left
           {
             // format: Data Left <XXXX>/<YYYY> (e.g. Data Left 123/12345)
-            setPrintProgress(cmd_value(), cmd_second_value());
+            setPrintProgressData(cmd_value(), cmd_second_value());
           }
           else
           {
@@ -937,16 +940,16 @@ void sendQueueCmd(void)
             if (GET_BIT(infoSettings.general_settings, INDEX_EMULATED_M109_M190) == 0)  // if emulated M109 / M190 is disabled
               break;
 
-            cmd_ptr[cmd_base_index + 2] = '4';  // avoid to send M190 to Marlin, send M140 
+            cmd_ptr[cmd_base_index + 2] = '4';  // avoid to send M190 to Marlin, send M140
             setWaitHeating(BED);
           }
-          // no break here. The data processing of M190 is the same as that of M140 below
-          case 140:  // M140
-            if (fromTFT)
-            {
-              syncTargetTemp(BED);
-            }
-            break;
+        // no break here. The data processing of M190 is the same as that of M140 below
+        case 140:  // M140
+          if (fromTFT)
+          {
+            syncTargetTemp(BED);
+          }
+          break;
 
         case 191:  // M191
           if (fromTFT)
@@ -954,13 +957,13 @@ void sendQueueCmd(void)
             cmd_ptr[cmd_base_index + 2] = '4';  // avoid to send M191 to Marlin, send M141
             setWaitHeating(CHAMBER);
           }
-          // no break here. The data processing of M191 is the same as that of M141 below
-          case 141:  // M141
-            if (fromTFT)
-            {
-              syncTargetTemp(CHAMBER);
-            }
-            break;
+        // no break here. The data processing of M191 is the same as that of M141 below
+        case 141:  // M141
+          if (fromTFT)
+          {
+            syncTargetTemp(CHAMBER);
+          }
+          break;
 
         case 200:  // M200 filament diameter
         {
@@ -1103,7 +1106,6 @@ void sendQueueCmd(void)
         case 306:  // M306
           if (getMpcTuningStatus() == REQUESTED && cmd_seen('T'))  // only if requested by GUI
             setMpcTuningStatus(STARTED);
-
           break;
 
         case 355:  // M355
@@ -1289,12 +1291,18 @@ void sendQueueCmd(void)
           break;
         #endif
 
-        case 90:  // G90
+        case 90:  // G90, set absolute position mode, in Marlin this includes the extruder position unless overridden by M83
           coorSetRelative(false);
+
+          if (infoMachineSettings.firmwareType == FW_MARLIN)
+            eSetRelative(false);
           break;
 
-        case 91:  // G91
+        case 91:  // G91, set relative position mode, in Marlin this includes the extruder position unless overridden by M82
           coorSetRelative(true);
+
+          if (infoMachineSettings.firmwareType == FW_MARLIN)
+            eSetRelative(true);
           break;
 
         case 92:  // G92
