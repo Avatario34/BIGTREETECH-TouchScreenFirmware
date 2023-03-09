@@ -511,7 +511,7 @@
  *
  *   Options: [disable: 0, enable: 1]
  */
-#define AUTO_LOAD_LEVELING 1  // Default: 1
+#define AUTO_LOAD_LEVELING 0  // Default: 0
 
 /**
  * Onboard / Printer Media
@@ -1136,10 +1136,13 @@
 
 // Manual Leveling
 // Move to four corner points to Leveling manually (Point 1, Point 2, Point 3, Point 4).
-#define LEVELING_EDGE_DISTANCE_DISPLAY_ID "X/Y"
-#define LEVELING_EDGE_DISTANCE_MIN           0                    // Default: 0
-#define LEVELING_EDGE_DISTANCE_MAX         100                    // Default: 100
-#define LEVELING_EDGE_DISTANCE_DEFAULT    LEVELING_EDGE_DISTANCE  // Default: LEVELING_EDGE_DISTANCE
+#define LEVELING_EDGE_DISTANCE_MIN       0                     // Default: 0
+#define LEVELING_EDGE_DISTANCE_MAX     100                     // Default: 100
+#define LEVELING_EDGE_DISTANCE_DEFAULT LEVELING_EDGE_DISTANCE  // Default: LEVELING_EDGE_DISTANCE
+
+#define LEVELING_Z_POS_MIN       0.0f          // Default: 0.0f
+#define LEVELING_Z_POS_MAX     100.0f          // Default: 100.0f
+#define LEVELING_Z_POS_DEFAULT LEVELING_Z_POS  // Default: LEVELING_Z_POS
 
 // Z Fade limits
 #define Z_FADE_MIN_VALUE      0.0f  // Default: 0.0f
@@ -1229,7 +1232,7 @@
  *   Options: [ENGLISH,    CHINESE,  RUSSIAN,     JAPANESE,   ARMENIAN,  GERMAN,        CZECH,
  *             SPANISH,    FRENCH,   PORTUGUESE,  ITALIAN,    POLISH,    SLOVAK,        DUTCH,
  *             HUNGARIAN,  TURKISH,  GREEK,       SLOVENIAN,  CATALAN,   TRAD_CHINESE,  UKRAINIAN,
- *             BRAZIL]
+ *             BRAZIL,     CROATIAN]
  */
 #define SYSTEM_LANGUAGE ENGLISH  // Default: ENGLISH
 
@@ -1268,7 +1271,7 @@
  *       M300 S<frequency Hz> P<duration MilliSeconds>
  */
 #define BUZZER_FREQUENCY_DURATION_MS    20  // in ms. Default: 20
-#define BUZZER_FREQUENCY_HZ          10000  // in Hz (20Hz to 60000Hz). Default: 10000
+#define BUZZER_FREQUENCY_HZ          10548  // in Hz (20Hz to 60000Hz). Default: 10548 (musical note "E")
 
 /**
  * Buzzer Stop Level
