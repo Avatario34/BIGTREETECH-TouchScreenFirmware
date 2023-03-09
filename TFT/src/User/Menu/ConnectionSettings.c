@@ -50,7 +50,6 @@ void menuBaudrate(void)
   KEY_VALUES curIndex = KEY_IDLE;
   uint8_t curItem = 0;
   uint16_t curPage;
-  SETTINGS now = infoSettings;
 
   // fill baudrate items
   for (uint8_t i = 0; i < size; i++)
@@ -92,10 +91,7 @@ void menuBaudrate(void)
     loopProcess();
   }
 
-  if (memcmp(&now, &infoSettings, sizeof(SETTINGS)))
-  {
-    storePara();
-  }
+  saveSettings();  // Save settings
 }
 
 void menuSerialPorts(void)
@@ -169,7 +165,7 @@ void menuConnectionSettings(void)
         // Emergency Stop : Used for emergency stopping, a reset is required to return to operational mode.
         // it may need to wait for a space to open up in the command queue.
         // Enable EMERGENCY_PARSER in Marlin Firmware for an instantaneous M112 command.
-        Serial_Puts(SERIAL_PORT, "M112\n");
+        sendEmergencyCmd("M112\n");
         break;
 
       case KEY_ICON_3:

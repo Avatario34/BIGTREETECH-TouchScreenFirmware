@@ -32,19 +32,19 @@ extern "C" {
 // Bitwise macros
 
 // Get bit status at selected index
-#define GET_BIT(num, index) ((num >> index) & 1)
+#define GET_BIT(num, index) (((num) >> (index)) & 1)
 
-// set bit status at selected index to 1
-#define SET_BIT_ON(num, index) num = (1 << index) | num
+// Set bit status at selected index to 1
+#define SET_BIT_ON(num, index) ((num) |= (1 << (index)))
 
-// set bit status at selected index to 0
-#define SET_BIT_OFF(num, index) num = num & (~(1 << index))
+// Set bit status at selected index to 0
+#define SET_BIT_OFF(num, index) ((num) &= ~(1 << (index)))
 
-// set bit status value (0 or 1) at selected index
-#define SET_BIT_VALUE(num, index, value) num = ((value) == 1) ? (1 << index) | num : num & (~(1 << index))
+// Set bit status value (0 or 1) at selected index
+#define SET_BIT_VALUE(num, index, value) ((num) = ((num) & (~(1 << (index)))) | ((value) << (index)))
 
 // Toggle bit status at selected index
-#define TOGGLE_BIT(num, index) num =  num ^ (1 << index)
+#define TOGGLE_BIT(num, index) ((num) ^= (1 << (index)))
 
 // Flip all bits
 #define FLIP_BITS(num) ~num
@@ -64,6 +64,8 @@ extern "C" {
 uint8_t inRange(int cur, int tag , int range);
 long map(long x, long in_min, long in_max, long out_min, long out_max);
 
+uint32_t calculateCRC16(const uint8_t *data, uint32_t length);  // Calculate CRC16 checksum
+
 uint8_t string_2_uint8_t(const uint8_t *string);
 uint8_t *uint8_2_string(uint8_t num, uint8_t *string);
 uint32_t string_2_uint32(const uint8_t *string, const uint8_t bytes_num);
@@ -75,6 +77,8 @@ const char *stripHead(const char *str);  // strip out any leading " ", "/" or ":
 void stripChecksum(char *str);           // strip out any trailing checksum that might be in the string
 uint8_t getChecksum(char *str);
 bool validateChecksum(char *str);
+
+const char *parseM118(char *str, bool *hasE, bool *hasA);
 
 #ifdef __cplusplus
 }

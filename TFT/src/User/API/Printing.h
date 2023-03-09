@@ -105,36 +105,36 @@ bool getPrintRunout(void);
 //void preparePrintSummary(void);
 //void sendPrintCodes(uint8_t index);
 
-void printSetUpdateWaiting(bool isWaiting);           // called in interfaceCmd.c
-void updatePrintUsedFilament(void);                   // called in PrintingMenu.c
-void clearInfoPrint(void);                            // called in PrintingMenu.c
+void setPrintUpdateWaiting(bool isWaiting);  // called in interfaceCmd.c
+void updatePrintUsedFilament(void);          // called in PrintingMenu.c
+void clearInfoPrint(void);                   // called in PrintingMenu.c
 
 //
 // commented because NOT externally invoked
 //
-//void printComplete(void);                           // print complete
+//void completePrint(void);                           // complete a print (finalize stats etc.)
 
-// start print originated or handled by remote host
+// start print originated and/or hosted (handled) by remote host
 // (e.g. print started from remote onboard media or hosted by remote host)
-bool printRemoteStart(const char * filename);
+bool startPrintFromRemoteHost(const char * filename);
 
-// start print originated or handled by TFT
-// (e.g. print started from TFT's GUI or hosted by TFT)
-bool printStart(void);                                // it also sends start gcode
+// start print originated and/or hosted (handled) by TFT
+// (e.g. print started from onboard media or hosted by TFT)
+bool startPrint(void);                                // it also sends start gcode
 
-void printEnd(void);                                  // it also sends end gcode
-void printAbort(void);                                // it also sends cancel gcode
-bool printPause(bool isPause, PAUSE_TYPE pauseType);
+void endPrint(void);                                  // it also sends end gcode
+void abortPrint(void);                                // it also sends cancel gcode
+bool pausePrint(bool isPause, PAUSE_TYPE pauseType);
 
-bool isPrinting(void);
-bool isPaused(void);
-bool isAborted(void);
-bool isTFTPrinting(void);
-bool isHostPrinting(void);
-bool isRemoteHostPrinting(void);
+bool isPrinting(void);                // return "true" in case a print is ongoing
+bool isPaused(void);                  // return "true" in case a print is paused
+bool isAborted(void);                 // return "true" in case a print is aborted/canceled
+bool isPrintingFromTFT(void);         // return "true" in case a print hosted (handled) by TFT is ongoing
+bool isPrintingFromHost(void);        // return "true" in case a print hosted (handled) by onboard (host) is ongoing
+bool isPrintingFromRemoteHost(void);  // return "true" in case a print hosted (handled) by remote host is ongoing
 
 //
-// used for print originated or handled by remote host
+// used for print hosted (handled) by onboard or remote host
 // (e.g. print started from (remote) onboard media or hosted by remote host)
 //
 void setPrintAbort(void);
