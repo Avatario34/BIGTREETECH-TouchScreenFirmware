@@ -255,6 +255,8 @@
     #define STRING_HEAT                   "Heizen"
     #define STRING_MOVE                   "Verfahren"
     #define STRING_HOME                   "Grundst.fahrt"
+    #define STRING_ZEROING                "Zero"
+    #define STRING_PROBING_Z              "Z-Probe"
     #define STRING_PRINT                  "Drucken"
     #define STRING_EXTRUDE                "Extruder"
     #define STRING_SETTINGS               "Parameter"

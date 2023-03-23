@@ -255,6 +255,8 @@
     #define STRING_HEAT                   "Isıt"
     #define STRING_MOVE                   "Hareket"
     #define STRING_HOME                   "Sıfırla"
+    #define STRING_ZEROING                "Zero"
+    #define STRING_PROBING_Z              "Z-Probe"    
     #define STRING_PRINT                  "Yazdır"
     #define STRING_EXTRUDE                "Filament"
     #define STRING_SETTINGS               "Ayarlar"

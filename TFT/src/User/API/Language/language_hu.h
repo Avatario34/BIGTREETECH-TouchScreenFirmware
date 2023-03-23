@@ -255,6 +255,8 @@
     #define STRING_HEAT                   "Fűtés"
     #define STRING_MOVE                   "Mozgás"
     #define STRING_HOME                   "Végállás"
+    #define STRING_ZEROING                "Zero"
+    #define STRING_PROBING_Z              "Z-Probe"    
     #define STRING_PRINT                  "Nyomtatás"
     #define STRING_EXTRUDE                "Adagolás"
     #define STRING_SETTINGS               "Opciók"

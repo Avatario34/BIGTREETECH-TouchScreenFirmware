@@ -255,6 +255,8 @@
     #define STRING_HEAT                   "Verwarm"
     #define STRING_MOVE                   "Verplaats"
     #define STRING_HOME                   "Thuis"
+    #define STRING_ZEROING                "Zero"
+    #define STRING_PROBING_Z              "Z-Probe"    
     #define STRING_PRINT                  "Print"
     #define STRING_EXTRUDE                "Extrudeer"
     #define STRING_SETTINGS               "Instellingen"

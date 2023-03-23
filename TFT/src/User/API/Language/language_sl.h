@@ -255,6 +255,8 @@
     #define STRING_HEAT                   "Gretje"
     #define STRING_MOVE                   "Pomik"
     #define STRING_HOME                   "Domov"
+    #define STRING_ZEROING                "Zero"
+    #define STRING_PROBING_Z              "Z-Probe"    
     #define STRING_PRINT                  "Tisk"
     #define STRING_EXTRUDE                "Filament"
     #define STRING_SETTINGS               "Nastavitve"

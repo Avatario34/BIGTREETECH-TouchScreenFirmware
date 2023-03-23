@@ -255,6 +255,8 @@
     #define STRING_HEAT                   "Teplota"
     #define STRING_MOVE                   "Posunout"
     #define STRING_HOME                   "Domu"
+    #define STRING_ZEROING                "Zero"
+    #define STRING_PROBING_Z              "Z-Probe"    
     #define STRING_PRINT                  "Tisknout"
     #define STRING_EXTRUDE                "Filament"
     #define STRING_SETTINGS               "Nastavení"

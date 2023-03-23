@@ -262,6 +262,8 @@ extern "C" {
 #define LANG_KEY_HEAT                         "label_heat:"
 #define LANG_KEY_MOVE                         "label_move:"
 #define LANG_KEY_HOME                         "label_home:"
+#define LANG_KEY_ZEROING                      "label_zeroing:"    
+#define LANG_KEY_PROBING_Z                    "label_probing_z:"
 #define LANG_KEY_PRINT                        "label_print:"
 #define LANG_KEY_EXTRUDE                      "label_extrude:"
 #define LANG_KEY_SETTINGS                     "label_settings:"

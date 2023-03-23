@@ -255,6 +255,8 @@
     #define STRING_HEAT                   "Ջերմություն"
     #define STRING_MOVE                   "Շարժել"
     #define STRING_HOME                   "Սկզբնական"
+    #define STRING_ZEROING                "Zero"
+    #define STRING_PROBING_Z              "Z-Probe"
     #define STRING_PRINT                  "Տպել"
     #define STRING_EXTRUDE                "Հալել"
     #define STRING_SETTINGS               "Կարգավորումներ"

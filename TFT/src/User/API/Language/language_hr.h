@@ -255,6 +255,8 @@
     #define STRING_HEAT                   "Toplina"
     #define STRING_MOVE                   "Pomicanje"
     #define STRING_HOME                   "Home"
+    #define STRING_ZEROING                "Zero"
+    #define STRING_PROBING_Z              "Z-Probe"    
     #define STRING_PRINT                  "Printaj"
     #define STRING_EXTRUDE                "Ekstrudaj"
     #define STRING_SETTINGS               "Postavke"

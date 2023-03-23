@@ -255,6 +255,8 @@
     #define STRING_HEAT                   "Calentar"
     #define STRING_MOVE                   "Mover"
     #define STRING_HOME                   "Origen"
+    #define STRING_ZEROING                "Zero"
+    #define STRING_PROBING_Z              "Z-Probe"    
     #define STRING_PRINT                  "Imprimir"
     #define STRING_EXTRUDE                "Extruir"
     #define STRING_SETTINGS               "Configurar"

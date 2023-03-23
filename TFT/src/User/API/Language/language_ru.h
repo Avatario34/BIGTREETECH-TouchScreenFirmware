@@ -255,6 +255,8 @@
     #define STRING_HEAT                   "Нагрев"
     #define STRING_MOVE                   "Движение"
     #define STRING_HOME                   "Домой"
+    #define STRING_ZEROING                "Zero"
+    #define STRING_PROBING_Z              "Z-Probe"    
     #define STRING_PRINT                  "Печать"
     #define STRING_EXTRUDE                "Экструзия"
     #define STRING_SETTINGS               "Настройки"

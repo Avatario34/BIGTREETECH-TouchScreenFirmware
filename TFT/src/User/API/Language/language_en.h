@@ -255,6 +255,8 @@
     #define STRING_HEAT                   "Heat"
     #define STRING_MOVE                   "Move"
     #define STRING_HOME                   "Home"
+    #define STRING_ZEROING                "Zero"
+    #define STRING_PROBING_Z              "Z-Probe"    
     #define STRING_PRINT                  "Print"
     #define STRING_EXTRUDE                "Extrude"
     #define STRING_SETTINGS               "Settings"

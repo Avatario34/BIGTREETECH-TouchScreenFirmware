@@ -255,6 +255,8 @@
     #define STRING_HEAT                   "加熱"
     #define STRING_MOVE                   "移動"
     #define STRING_HOME                   "回原點"
+    #define STRING_ZEROING                "Zero"
+    #define STRING_PROBING_Z              "Z-Probe"    
     #define STRING_PRINT                  "列印"
     #define STRING_EXTRUDE                "擠出"
     #define STRING_SETTINGS               "設定"

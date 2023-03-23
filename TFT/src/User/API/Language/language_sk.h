@@ -255,6 +255,8 @@
     #define STRING_HEAT                   "Teplota"
     #define STRING_MOVE                   "Posunúť"
     #define STRING_HOME                   "Domov"
+    #define STRING_ZEROING                "Zero"
+    #define STRING_PROBING_Z              "Z-Probe"    
     #define STRING_PRINT                  "Tlačiť"
     #define STRING_EXTRUDE                "Extrúder"
     #define STRING_SETTINGS               "Nastavenia"

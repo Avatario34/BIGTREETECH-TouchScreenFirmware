@@ -255,6 +255,8 @@
     #define STRING_HEAT                   "Нагрівання"
     #define STRING_MOVE                   "Рух"
     #define STRING_HOME                   "Додому"
+    #define STRING_ZEROING                "Zero"
+    #define STRING_PROBING_Z              "Z-Probe"    
     #define STRING_PRINT                  "Друк"
     #define STRING_EXTRUDE                "Екструзія"
     #define STRING_SETTINGS               "Налаштування"

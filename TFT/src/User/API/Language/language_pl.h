@@ -255,6 +255,8 @@
     #define STRING_HEAT                   "Grzałka"
     #define STRING_MOVE                   "Przesuw"
     #define STRING_HOME                   "Punkt baz."
+    #define STRING_ZEROING                "Zero"
+    #define STRING_PROBING_Z              "Z-Probe"
     #define STRING_PRINT                  "Drukuj"
     #define STRING_EXTRUDE                "Ekstruder"
     #define STRING_SETTINGS               "Ustawienia"

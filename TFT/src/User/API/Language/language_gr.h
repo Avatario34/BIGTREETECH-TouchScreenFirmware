@@ -255,6 +255,8 @@
     #define STRING_HEAT                   "Θέρμανση"
     #define STRING_MOVE                   "Μετακίνηση"
     #define STRING_HOME                   "Αυτο-Κατεύθυνση"
+    #define STRING_ZEROING                "Zero"
+    #define STRING_PROBING_Z              "Z-Probe"    
     #define STRING_PRINT                  "Εκτύπωση"
     #define STRING_EXTRUDE                "Εκβολή"
     #define STRING_SETTINGS               "Ρυθμίσεις"

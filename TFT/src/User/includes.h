@@ -118,6 +118,7 @@
 #include "FeatureSettings.h"
 #include "Heat.h"
 #include "Home.h"
+#include "Zeroing.h"
 #include "LEDColor.h"
 #include "LevelCorner.h"
 #include "Leveling.h"
